@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="asv_motor_control_ros1_node"
+        type="arduino_pwm_node_ros1.py"
+        name="arduino_pwm_controller"
+        output="screen" />
+</launch>
