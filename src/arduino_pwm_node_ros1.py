@@ -7,7 +7,7 @@ import time
 import math
 
 # Configuration
-PORT = '/dev/ttyACM0'  # Update for Windows (e.g., 'COM3')
+PORT = '/dev/ttyUSB0'  # Update for Windows (e.g., 'COM3')
 BAUD = 115200
 PWM_MIN = 1100
 PWM_MAX = 1900
@@ -47,10 +47,14 @@ class ArduinoPWMNodeROS1(object):
         if len(msg.data) != 4:
             rospy.logwarn("Expected 4 force values, got %d", len(msg.data))
             return
+        
+        # print(msg.data)
 
         # Convert force values to PWM values
         # You'll need to define the mapping from force to PWM
-        pwm_values = self.force_to_pwm(msg.data)
+        pwm_values = []
+        for data_value in msg.data:
+            pwm_values.append(self.force_to_pwm(data_value))
         
         # Clamp values to valid range
         clamped_values = []
@@ -67,14 +71,13 @@ class ArduinoPWMNodeROS1(object):
         left_pwm, right_pwm, front_pwm, back_pwm = clamped_values
         self.send_pwm(left_pwm, right_pwm, front_pwm, back_pwm)
 
-    def force_to_pwm(self, force_kgf) -> float:
+    def force_to_pwm(self, force) -> float:
         A1L = -1.371921163e-04
         B1L = 4.652741433e-01
         C1L = -3.87238288e+02
         A2H = 1.84721848e-04
         B2H = -4.889302056e-01
         C2H = 3.153301465e+02
-        KGF_TO_N = 9.80665
         NEAR_ZERO_N = 0.01
         LO, HI = 1100.0, 1900.0
         MID = 1500.0
@@ -105,12 +108,12 @@ class ArduinoPWMNodeROS1(object):
                 return float(cand)
             raise ValueError
 
-        F_n = float(force_kgf) * KGF_TO_N
+        F_n = float(force)
         if -NEAR_ZERO_N <= F_n <= NEAR_ZERO_N:
             return MID
-        try:
+        if F_n < 0:
             pwm = inv_quad(A1L, B1L, C1L, F_n, 1100.0, 1500.0)
-        except Exception:
+        elif F_n > 0:
             pwm = inv_quad(A2H, B2H, C2H, F_n, 1500.0, 1900.0)
         if pwm < LO:
             return LO
