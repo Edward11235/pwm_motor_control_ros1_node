@@ -7,7 +7,7 @@ import time
 import math
 
 # Configuration
-PORT = '/dev/ttyUSB0'  # Update for Windows (e.g., 'COM3')
+PORT = '/dev/arduino_motor'  # Update for Windows (e.g., 'COM3')
 BAUD = 115200
 PWM_MIN = 1100
 PWM_MAX = 1900
