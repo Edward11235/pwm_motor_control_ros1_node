@@ -26,7 +26,7 @@ To ensure consistent naming of your Arduino Nano device, you can create a udev r
     # or
     SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0042", SYMLINK+="arduino_motor"
     # or
-    SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", SYMLINK+="arduino_motor"
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", ATTRS{devpath}=="2.3", SYMLINK+="arduino_motor"
     # or (orignal arduino uno)
     SUBSYSTEM=="tty", ATTRS{idVendor}=="2a03", ATTRS{idProduct}=="0043", SYMLINK+="arduino_motor"
     ```
@@ -38,3 +38,6 @@ To ensure consistent naming of your Arduino Nano device, you can create a udev r
     sudo udevadm trigger
     ```
 5. **TO run it**
+    ```sh
+    rosrun asv_motor_control_ros1_node arduino_pwm_node_ros1.py
+    ```
